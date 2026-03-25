@@ -28,8 +28,16 @@
         }
     }
 
+    const loginIcon = UserCircleIcon
+    const signupIcon = AcademicCapIcon
+
+    const isAuthenticated = ref(false)
+    
+    import api from '../services/api'
+    
     onMounted(() => {
         window.addEventListener('scroll', handleScroll, { passive: true })
+        isAuthenticated.value = !!localStorage.getItem('user')
         // Animate header in
         gsap.from('.app-header', {
             y: -20,
@@ -39,6 +47,18 @@
             delay: 0.2
         })
     })
+
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            localStorage.removeItem('user');
+            isAuthenticated.value = false;
+            window.location.href = '/login';
+        }
+    }
 
     onUnmounted(() => {
         window.removeEventListener('scroll', handleScroll)
@@ -51,9 +71,6 @@
         { name: 'Projets', to: '#projets', icon: FolderIcon },
     ]
     const logo = new URL('@/assets/images/strivingforall.org-1757063679967/cropped-Logo-Black-on-Transparent.png', import.meta.url).href
-    
-    const loginIcon = UserCircleIcon
-    const signupIcon = AcademicCapIcon
 </script>
 
 <template>
@@ -72,19 +89,30 @@
         </nav>
 
         <div class="header-actions">
-            <RouterLink to="/login" class="btn btn-login">
-                <component :is="loginIcon" class="icon-btn" />
-                Se connecter
-            </RouterLink>
-            <RouterLink to="/signup" class="btn btn-signup">
-                <component :is="signupIcon" class="icon-btn" />
-                S'inscrire
-            </RouterLink>
+            <template v-if="!isAuthenticated">
+                <RouterLink to="/login" class="btn btn-login">
+                    <component :is="loginIcon" class="icon-btn" />
+                    Se connecter
+                </RouterLink>
+                <RouterLink to="/signup" class="btn btn-signup">
+                    <component :is="signupIcon" class="icon-btn" />
+                    S'inscrire
+                </RouterLink>
+            </template>
+            <template v-else>
+                <button @click="handleLogout" class="btn btn-signup">
+                    <component :is="loginIcon" class="icon-btn" />
+                    Se déconnecter
+                </button>
+            </template>
         </div>
     </header>
 </template>
 
 <style scoped>
+    *{
+        font-family: 'Poppins', sans-serif;
+    }
 
     a{
         text-decoration: none;
@@ -225,9 +253,7 @@ nav img{
 
 }
 .btn-login:hover {
-    background: #ECE9E6;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-color: var(--bs-gray-200);
     color: var(--bs-black);
 }
 @keyframes bg-header {

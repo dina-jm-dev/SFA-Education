@@ -1,4 +1,5 @@
 <script setup>
+    import '../assets/styles/variables.css';
     import AppHeader from '../components/AppHeader.vue';
     import AppFooter from '../components/AppFooter.vue';
     import { ref, onMounted } from 'vue';
@@ -175,11 +176,13 @@
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .course-card:hover {
         cursor: pointer;
+        border-color: var(--global-primary-color);
         box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     }
 
@@ -199,8 +202,7 @@
 
 /* HOVER */
 .course-img:hover img {
-    transform: scale(1.05); /* zoom léger */
-    filter: brightness(0.7); /* assombrir */
+    filter: brightness(0.85); /* assombrir léger */
 }
 
     .badge {

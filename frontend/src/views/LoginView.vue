@@ -1,4 +1,5 @@
 <script setup>
+    import '../assets/styles/variables.css';
     import { ref } from 'vue';
     import { useRouter } from 'vue-router';
     import api from '../services/api';
@@ -8,17 +9,22 @@
     const username = ref('');
     const password = ref('');
     const error = ref('');
+    const isLoading = ref(false);
 
     const login = async () => {
+        isLoading.value = true;
         try {
             const response = await api.post('/auth/login', {
-                username: username.value,
+                identifier: username.value,
                 password: password.value
             });
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            // Le token est désormais géré automatiquement via un cookie HttpOnly sécurisé
             router.push('/');
         } catch (err) {
             error.value = 'Identifiants incorrects.';
+        } finally {
+            isLoading.value = false;
         }
     };
 </script>
@@ -36,10 +42,10 @@
 
                     <form @submit.prevent="login">
                         <div class="input-group">
-                            <label>Nom d'utilisateur</label>
+                            <label>Nom d'utilisateur ou Email</label>
                             <div class="input-wrapper">
                                 <component :is="UserIcon" class="input-icon" />
-                                <input type="text" v-model="username" required placeholder="Entrez votre pseudo">
+                                <input type="text" v-model="username" required placeholder="Entrez votre pseudo ou email">
                             </div>
                         </div>
 
@@ -51,7 +57,10 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-auth">Connexion</button>
+                        <button type="submit" class="btn-auth" :disabled="isLoading">
+                            <span v-if="isLoading" class="spinner"></span>
+                            <span v-else>Connexion</span>
+                        </button>
                     </form>
 
                     <p class="auth-footer">
@@ -183,6 +192,25 @@
 
     .error-msg { background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
     .icon-inline { width: 16px; height: 16px; }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        vertical-align: middle;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 
     @media (max-width: 900px) {
         .auth-right { display: none; }

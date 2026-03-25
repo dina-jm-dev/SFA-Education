@@ -1,20 +1,28 @@
 import axios from 'axios';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 const api = axios.create({
     baseURL: 'http://localhost:3000/api',
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
     }
 });
 
-// Add a request interceptor to include auth token if needed
 api.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+    NProgress.start();
     return config;
 }, error => {
+    NProgress.done();
+    return Promise.reject(error);
+});
+
+api.interceptors.response.use(response => {
+    NProgress.done();
+    return response;
+}, error => {
+    NProgress.done();
     return Promise.reject(error);
 });
 

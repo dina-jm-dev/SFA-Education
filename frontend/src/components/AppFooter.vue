@@ -105,6 +105,9 @@
 </template>
 
 <style scoped>
+    *{  
+        font-family: 'Poppins', sans-serif;
+    }
     a{
         text-decoration: none;
         color: var(--bs-white);

@@ -65,11 +65,11 @@
         const title = new SplitType('.hero-content h2', { types: 'words,chars' });
         gsap.from(title.chars, {
             opacity: 0,
-            y: 50,
-            rotate: 10,
+            y: 20,
+            rotate: 2,
             duration: 0.8,
             stagger: 0.02,
-            ease: 'back.out'
+            ease: 'power2.out'
         });
 
         gsap.from('.hero-content p', {
@@ -97,12 +97,12 @@
             });
         };
 
-        revealOnScroll('.accomplishment-card', 60);
-        revealOnScroll('.course-card', 40, 0.95);
-        revealOnScroll('.section-header', 30);
-        revealOnScroll('.donation-card', 80);
-        revealOnScroll('.testimonials h2', 20);
-        revealOnScroll('.carousel', 40);
+        revealOnScroll('.accomplishment-card', 30);
+        revealOnScroll('.course-card', 20, 1);
+        revealOnScroll('.section-header', 20);
+        revealOnScroll('.donation-card', 30);
+        revealOnScroll('.testimonials h2', 15);
+        revealOnScroll('.carousel', 20);
     });
 </script>
 
@@ -312,11 +312,13 @@
         border-radius: 20px;
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
+        border: 1px solid transparent;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .accomplishment-card:hover {
-        transform: translateY(-10px);
+        background-color: #f8f9fa;
+        border-color: var(--global-primary-color);
     }
 
     .acc-icon {
@@ -338,11 +340,12 @@
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .course-card:hover {
-        transform: scale(1.02);
+        border-color: var(--global-primary-color);
         box-shadow: 0 20px 50px rgba(0,0,0,0.12);
     }
 
@@ -466,7 +469,7 @@
 
     .btn-donate:hover {
         background: #c12e3a;
-        transform: translateY(-1px);
+        opacity: 0.9;
         box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
     }
 
