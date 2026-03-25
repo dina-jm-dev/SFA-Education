@@ -115,6 +115,7 @@
         padding: 60px 40px 20px;
         position: relative; /* Défixé pour le contenu long */
         width: 100%;
+        overflow-x: hidden;
     }
 
     .footer-content {

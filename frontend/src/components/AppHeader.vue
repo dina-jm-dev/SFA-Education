@@ -105,6 +105,7 @@
         z-index: 9999;
         height: 80px;
         transition: all 0.3s ease;
+        overflow-x: hidden;
     }
 
     header.scrolled {

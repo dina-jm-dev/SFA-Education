@@ -4,7 +4,7 @@
     import { ref, onMounted } from 'vue';
     import courseService from '../services/courseService';
     import gsap from 'gsap';
-    import { MagnifyingGlassIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
+    import { UserIcon, MagnifyingGlassIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 
     const courses = ref([]);
     const filteredCourses = ref([]);
@@ -86,7 +86,7 @@
                             <h3>{{ course.title }}</h3>
                             <p>{{ course.description?.substring(0, 120) }}...</p>
                             <div class="course-footer">
-                                <span class="teacher">Par {{ course.teacherName }}</span>
+                                <span class="teacher"><component :is="UserIcon" class="user-icon" />Par {{ course.teacherName }}</span>
                                 <a :href="'/courses/' + course.id" class="btn-text">
                                     En savoir plus <component :is="ArrowRightIcon" class="icon-inline" />
                                 </a>
@@ -104,6 +104,7 @@
 <style scoped>
     *{
         font-family: var(--font-family);
+        overflow-x: hidden;
     }
     .courses-page {
         padding-top: 80px;
@@ -125,6 +126,7 @@
         max-width: 600px;
         margin: 40px auto 0;
         position: relative;
+        overflow-x: visible;
     }
 
     .search-bar input {
@@ -177,20 +179,29 @@
     }
 
     .course-card:hover {
-        transform: translateY(-5px);
+        cursor: pointer;
         box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     }
 
     .course-img {
-        height: 200px;
-        position: relative;
-    }
+    height: 200px;
+    position: relative;
+    overflow: hidden; /* TRÈS IMPORTANT */
+}
 
-    .course-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+.course-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* HOVER */
+.course-img:hover img {
+    transform: scale(1.05); /* zoom léger */
+    filter: brightness(0.7); /* assombrir */
+}
 
     .badge {
         position: absolute;
@@ -223,18 +234,49 @@
         font-size: 0.9rem;
     }
 
-    .icon-inline {
+    .user-icon {
         width: 16px;
         height: 16px;
-        display: inline;
+        display: inline-block; /* IMPORTANT */
         vertical-align: middle;
+        margin-right: 5px;
     }
 
+    .icon-inline {
+    width: 16px;
+    height: 16px;
+    display: inline-block; /* IMPORTANT */
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+/* quand on hover sur le texte */
+.btn-text:hover .icon-inline {
+    transform: translateX(5px);
+}
     .btn-text {
-        color: var(--global-primary-color);
-        text-decoration: none;
-        font-weight: 600;
-    }
+    position: relative;
+    color: var(--global-primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ligne cachée */
+.btn-text::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0%;
+    height: 2px;
+    background-color: var(--global-primary-color);
+    transition: width 0.3s ease;
+}
+
+/* animation au hover */
+.btn-text:hover::after {
+    width: 100%;
+}
 
     .loader, .no-results {
         text-align: center;
