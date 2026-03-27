@@ -9,7 +9,8 @@ CREATE TABLE utilisateurs (
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,   -- hash bcrypt, ne pas réduire
     email VARCHAR(150) NOT NULL UNIQUE,
-    role ENUM('Administrator', 'Student', 'Teacher') NOT NULL
+    role ENUM('Administrator', 'Student', 'Teacher') NOT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL
 );
 
 -- Table Course
@@ -20,6 +21,7 @@ CREATE TABLE cours (
     duration VARCHAR(50),
     progress INT DEFAULT 0,
     teacherId INT,
+    profile_picture VARCHAR(255) DEFAULT NULL,
     FOREIGN KEY (teacherId) REFERENCES utilisateurs(id) ON DELETE SET NULL
 );
 
@@ -30,6 +32,7 @@ CREATE TABLE chapter (
     duration VARCHAR(50),
     progress INT DEFAULT 0,
     courseId INT NOT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,
     FOREIGN KEY (courseId) REFERENCES cours(id) ON DELETE CASCADE
 );
 
@@ -40,6 +43,7 @@ CREATE TABLE lesson (
     duration VARCHAR(50),
     progress INT DEFAULT 0,
     chapterId INT NOT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,
     FOREIGN KEY (chapterId) REFERENCES chapter(id) ON DELETE CASCADE
 );
 

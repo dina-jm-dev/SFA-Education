@@ -3,14 +3,14 @@ const bcrypt = require('bcryptjs')
 
 // CREATE
 exports.createUser = async (req, res) => {
-    const { name, username, email, password, role } = req.body
+    const { name, username, email, password, role, profile_picture } = req.body
 
     const hash = await bcrypt.hash(password, 10)
 
     await db.query(
-        `INSERT INTO utilisateurs (name, username, email, password, role)
-     VALUES (?, ?, ?, ?, ?)`,
-        [name, username, email, hash, role]
+        `INSERT INTO utilisateurs (name, username, email, password, role, profile_picture)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+        [name, username, email, hash, role, profile_picture || null]
     )
 
     res.json({ message: 'User created' })

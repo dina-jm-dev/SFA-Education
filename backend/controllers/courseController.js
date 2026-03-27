@@ -2,12 +2,12 @@ const db = require('../config/db')
 
 // CREATE (Admin + Teacher)
 exports.createCourse = async (req, res) => {
-    const { title, description, duration } = req.body
+    const { title, description, duration, profile_picture } = req.body
 
     await db.query(
-        `INSERT INTO cours (title, description, duration, teacherId)
-     VALUES (?, ?, ?, ?)`,
-        [title, description, duration, req.user.id]
+        `INSERT INTO cours (title, description, duration, teacherId, profile_picture)
+     VALUES (?, ?, ?, ?, ?)`,
+        [title, description, duration, req.user.id, profile_picture || null]
     )
 
     res.json({ message: 'Course created' })
