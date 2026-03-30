@@ -108,8 +108,11 @@
                 </RouterLink>
             </template>
             <template v-else>
-                <RouterLink v-if="userRole === 'Administrator' || userRole === 'Teacher'" to="/teacher-dashboard" class="btn btn-login" style="margin-right: 15px;">
+                <RouterLink v-if="userRole === 'Administrator'" to="/admin-dashboard" class="btn btn-login" style="margin-right: 15px;">
                     Espace Admin
+                </RouterLink>
+                <RouterLink v-else-if="userRole === 'Teacher'" to="/teacher-dashboard" class="btn btn-login" style="margin-right: 15px;">
+                    Espace Enseignant
                 </RouterLink>
                 <RouterLink v-else to="/student-dashboard" class="btn btn-login" style="margin-right: 15px;">
                     Tableau de Bord

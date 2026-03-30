@@ -22,7 +22,9 @@
             localStorage.setItem('user', JSON.stringify(userData));
             
             // Redirection selon le rôle
-            if (userData.role === 'Administrator' || userData.role === 'Teacher') {
+            if (userData.role === 'Administrator') {
+                router.push('/admin-dashboard');
+            } else if (userData.role === 'Teacher') {
                 router.push('/teacher-dashboard');
             } else {
                 router.push('/student-dashboard');
