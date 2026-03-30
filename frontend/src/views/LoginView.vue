@@ -18,9 +18,15 @@
                 identifier: username.value,
                 password: password.value
             });
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            // Le token est désormais géré automatiquement via un cookie HttpOnly sécurisé
-            router.push('/');
+            const userData = response.data.user;
+            localStorage.setItem('user', JSON.stringify(userData));
+            
+            // Redirection selon le rôle
+            if (userData.role === 'Administrator' || userData.role === 'Teacher') {
+                router.push('/teacher-dashboard');
+            } else {
+                router.push('/student-dashboard');
+            }
         } catch (err) {
             error.value = 'Identifiants incorrects.';
         } finally {

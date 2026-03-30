@@ -1,16 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useLoading } from 'vue-loading-overlay'
-import 'vue-loading-overlay/dist/css/index.css'
-
-const $loading = useLoading({
-    color: '#FF9C02',
-    backgroundColor: '#ffffff',
-    loader: 'spinner',
-    opacity: 0.9,
-    zIndex: 99999
-});
-
-let loader = null;
 
 const routes = [
     {
@@ -37,6 +25,16 @@ const routes = [
         path: '/signup',
         name: 'signup',
         component: () => import('../views/SignupView.vue')
+    },
+    {
+        path: '/student-dashboard',
+        name: 'student-dashboard',
+        component: () => import('../views/StudentDashboardView.vue')
+    },
+    {
+        path: '/teacher-dashboard',
+        name: 'teacher-dashboard',
+        component: () => import('../views/TeacherDashboardView.vue')
     }
 ]
 
@@ -44,20 +42,5 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
-
-router.beforeEach((to, from, next) => {
-    loader = $loading.show();
-    setTimeout(() => {
-        next();
-    }, 200); // Effet de chargement
-});
-
-router.afterEach(() => {
-    if (loader) {
-        setTimeout(() => {
-            loader.hide();
-        }, 100);
-    }
-});
 
 export default router

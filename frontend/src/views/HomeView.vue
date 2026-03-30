@@ -217,10 +217,6 @@
     *{
         font-family: var(--font-family);
     }
-    .home-container {
-        overflow-x: hidden;
-    }
-
     /* Sections */
     section {
         padding: 100px 20px;

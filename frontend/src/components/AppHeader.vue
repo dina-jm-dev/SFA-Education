@@ -32,12 +32,20 @@
     const signupIcon = AcademicCapIcon
 
     const isAuthenticated = ref(false)
+    const userRole = ref('')
     
     import api from '../services/api'
     
     onMounted(() => {
         window.addEventListener('scroll', handleScroll, { passive: true })
-        isAuthenticated.value = !!localStorage.getItem('user')
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            isAuthenticated.value = true;
+            try {
+                const userObj = JSON.parse(userStr);
+                userRole.value = userObj.role;
+            } catch(e){}
+        }
         // Animate header in
         gsap.from('.app-header', {
             y: -20,
@@ -100,8 +108,14 @@
                 </RouterLink>
             </template>
             <template v-else>
+                <RouterLink v-if="userRole === 'Administrator' || userRole === 'Teacher'" to="/teacher-dashboard" class="btn btn-login" style="margin-right: 15px;">
+                    Espace Admin
+                </RouterLink>
+                <RouterLink v-else to="/student-dashboard" class="btn btn-login" style="margin-right: 15px;">
+                    Tableau de Bord
+                </RouterLink>
+
                 <button @click="handleLogout" class="btn btn-signup">
-                    <component :is="loginIcon" class="icon-btn" />
                     Se déconnecter
                 </button>
             </template>

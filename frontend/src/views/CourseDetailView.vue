@@ -3,18 +3,31 @@
     import AppHeader from '../components/AppHeader.vue';
     import AppFooter from '../components/AppFooter.vue';
     import { ref, onMounted } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import courseService from '../services/courseService';
     import { ClockIcon, UserIcon, AcademicCapIcon, CheckCircleIcon } from '@heroicons/vue/24/outline';
 
     const route = useRoute();
+    const router = useRouter();
     const course = ref(null);
     const loading = ref(true);
+    const isEnrolling = ref(false);
+    const alertMessage = ref('');
+    const alertType = ref('');
 
-    const fetchCourse = async () => {
+    const isEnrolled = ref(false);
+    const completedLessons = ref(JSON.parse(localStorage.getItem('completed_lessons') || '[]'));
+    const authState = ref(!!localStorage.getItem('user'));
+
+    const fetchCourseAndStatus = async () => {
         try {
             const response = await courseService.getCourseById(route.params.id);
             course.value = response.data;
+            
+            if (authState.value) {
+                const enrollments = await courseService.getMyCourses();
+                isEnrolled.value = enrollments.data.some(c => c.id === course.value.id);
+            }
         } catch (error) {
             console.error('Error fetching course:', error);
         } finally {
@@ -22,7 +35,61 @@
         }
     };
 
-    onMounted(fetchCourse);
+    const toggleLesson = (lessonId) => {
+        if (!isEnrolled.value) return;
+        const index = completedLessons.value.indexOf(lessonId);
+        if (index > -1) {
+            completedLessons.value.splice(index, 1);
+        } else {
+            completedLessons.value.push(lessonId);
+        }
+        localStorage.setItem('completed_lessons', JSON.stringify(completedLessons.value));
+        updateCourseProgress();
+    };
+
+    const updateCourseProgress = () => {
+        if (!course.value || !course.value.chapters) return;
+        let totalLessons = 0;
+        let completed = 0;
+        
+        course.value.chapters.forEach(chap => {
+            if(chap.lessons) {
+                totalLessons += chap.lessons.length;
+                chap.lessons.forEach(l => {
+                    if (completedLessons.value.includes(l.id)) completed++;
+                });
+            }
+        });
+        
+        const progress = totalLessons === 0 ? 0 : (completed / totalLessons) * 100;
+        localStorage.setItem('course_progress_' + course.value.id, progress);
+    };
+
+    const handleEnroll = async () => {
+        if (!authState.value) {
+            router.push('/login');
+            return;
+        }
+        isEnrolling.value = true;
+        try {
+            await courseService.enrollCourse(course.value.id);
+            alertType.value = 'success';
+            alertMessage.value = 'Vous êtes maintenant inscrit(e) à ce cours !';
+            isEnrolled.value = true;
+        } catch (err) {
+            alertType.value = 'error';
+            if (err.response?.status === 400) {
+                alertMessage.value = 'Vous êtes déjà inscrit(e) à ce cours.';
+                isEnrolled.value = true;
+            } else {
+                alertMessage.value = 'Erreur lors de l\'inscription.';
+            }
+        } finally {
+            isEnrolling.value = false;
+        }
+    };
+
+    onMounted(fetchCourseAndStatus);
 </script>
 
 <template>
@@ -48,7 +115,15 @@
                                 <span>Par {{ course.teacherName }}</span>
                             </div>
                         </div>
-                        <button class="btn-enroll">S'inscrire maintenant</button>
+                        <div v-if="alertMessage" class="alert-box" :class="alertType">
+                            {{ alertMessage }}
+                        </div>
+                        <button v-if="!isEnrolled" class="btn-enroll" @click="handleEnroll" :disabled="isEnrolling">
+                            {{ isEnrolling ? 'Inscription en cours...' : 'S\'inscrire maintenant' }}
+                        </button>
+                        <div v-else class="btn-enroll enrolled-badge" style="background:#10b981; text-align:center;">
+                            Vous suivez ce cours
+                        </div>
                     </div>
                     <div class="hero-image">
                         <img src="@/assets/images/wacom-work.jpg" alt="Course Image">
@@ -71,8 +146,19 @@
                                 </div>
                                 <ul class="lesson-list">
                                     <li v-for="lesson in chapter.lessons" :key="lesson.id" class="lesson-item">
-                                        <component :is="AcademicCapIcon" class="lesson-icon" />
-                                        <span>{{ lesson.title }}</span>
+                                        <div style="display:flex; align-items:center; gap: 15px;">
+                                            <input 
+                                                v-if="isEnrolled" 
+                                                type="checkbox" 
+                                                :checked="completedLessons.includes(lesson.id)" 
+                                                @change="toggleLesson(lesson.id)" 
+                                                style="transform: scale(1.3); cursor:pointer; accent-color: var(--global-primary-color);" 
+                                            />
+                                            <component v-else :is="AcademicCapIcon" class="lesson-icon" />
+                                            <span :style="completedLessons.includes(lesson.id) ? 'text-decoration: line-through; color: #999;' : ''">
+                                                {{ lesson.title }}
+                                            </span>
+                                        </div>
                                         <span class="lesson-duration">{{ lesson.duration }}</span>
                                     </li>
                                 </ul>
@@ -193,8 +279,33 @@
         transition: background 0.3s ease;
     }
 
-    .btn-enroll:hover {
+    .btn-enroll:hover:not(:disabled) {
         background: var(--global-secondary-color);
+    }
+
+    .btn-enroll:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .alert-box {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .alert-box.success {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #10b981;
+    }
+
+    .alert-box.error {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #ef4444;
     }
 
     .hero-image img {

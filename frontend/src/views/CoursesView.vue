@@ -105,7 +105,6 @@
 <style scoped>
     *{
         font-family: var(--font-family);
-        overflow-x: hidden;
     }
     .courses-page {
         padding-top: 80px;

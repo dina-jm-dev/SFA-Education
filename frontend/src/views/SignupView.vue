@@ -23,7 +23,14 @@
                 password: password.value,
                 role: 'Student'
             });
-            router.push('/login');
+            const userData = {
+                name: name.value,
+                username: username.value,
+                email: email.value,
+                role: 'Student'
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            router.push('/student-dashboard');
         } catch (err) {
             error.value = 'Erreur lors de l\'inscription.';
         } finally {

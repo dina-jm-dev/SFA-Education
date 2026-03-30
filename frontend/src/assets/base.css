@@ -85,6 +85,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 :root {
   --global-primary-color: #FF9C02;
   --global-secondary-color: #D48100;
@@ -101,4 +103,42 @@ body {
   --bs-gray-900: #212529;
   --bs-white: #ffffff;
   --bs-black: #000000;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-family);
+  background-color: var(--bs-white);
+  color: var(--bs-gray-800);
+}
+
+#app {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-family);
+  background-color: var(--bs-white);
+  color: var(--bs-gray-800);
+}
+
+#app {
+  width: 100%;
+  overflow-x: hidden;
 }
