@@ -67,6 +67,21 @@ exports.getCourseById = async (req, res) => {
     }
 }
 
+// UPDATE
+exports.updateCourse = async (req, res) => {
+    const { title, description, duration, profile_picture, teacherId } = req.body
+    try {
+        await db.query(
+            'UPDATE cours SET title = ?, description = ?, duration = ?, profile_picture = ?, teacherId = ? WHERE id = ?',
+            [title, description, duration, profile_picture || null, teacherId || null, req.params.id]
+        )
+        res.json({ message: 'Course updated' })
+    } catch (error) {
+        console.error('Error updating course:', error)
+        res.status(500).json({ message: 'Error updating course' })
+    }
+}
+
 // DELETE
 exports.deleteCourse = async (req, res) => {
     await db.query(

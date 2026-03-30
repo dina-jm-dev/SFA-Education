@@ -9,6 +9,7 @@ router.get('/:id', ctrl.getCourseById)
 
 // Admin + Teacher (protégé)
 router.post('/', auth, roles('Administrator', 'Teacher'), ctrl.createCourse)
+router.put('/:id', auth, roles('Administrator', 'Teacher'), ctrl.updateCourse)
 
 router.delete('/:id', auth, roles('Administrator', 'Teacher'), ctrl.deleteCourse)
 
