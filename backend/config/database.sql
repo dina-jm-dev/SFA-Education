@@ -69,3 +69,12 @@ CREATE TABLE enrollment (
     FOREIGN KEY (studentId) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (courseId) REFERENCES cours(id) ON DELETE CASCADE
 );
+CREATE TABLE lesson_completion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    studentId INT NOT NULL,
+    lessonId INT NOT NULL,
+    completedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY student_lesson (studentId, lessonId),
+    FOREIGN KEY (studentId) REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    FOREIGN KEY (lessonId) REFERENCES lesson(id) ON DELETE CASCADE
+);
