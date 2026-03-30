@@ -64,6 +64,19 @@ const stats = computed(() => {
     };
 });
 
+const teachersList = computed(() => users.value.filter(u => u.role === 'Teacher'));
+
+const handleAssignTeacher = async (courseId, teacherId) => {
+    try {
+        await courseService.updateCourse(courseId, { teacherId });
+        alert('Enseignant assigné avec succès !');
+        await fetchStats(); // Refresh list
+    } catch (e) {
+        console.error(e);
+        alert("Erreur lors de l'assignation de l'enseignant.");
+    }
+};
+
 onMounted(fetchStats);
 </script>
 
@@ -183,7 +196,16 @@ onMounted(fetchStats);
                             <tbody>
                                 <tr v-for="course in courses" :key="course.id">
                                     <td><strong>{{ course.title }}</strong></td>
-                                    <td>{{ course.enseignant_nom || 'N/A' }}</td>
+                                    <td>
+                                        <div class="assign-teacher">
+                                            <select v-model="course.teacherId" @change="handleAssignTeacher(course.id, course.teacherId)">
+                                                <option :value="null">Aucun enseignant</option>
+                                                <option v-for="t in teachersList" :key="t.id" :value="t.id">
+                                                    {{ t.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </td>
                                     <td>{{ course.duration }}</td>
                                     <td>
                                         <button class="btn-action delete" @click="handleDeleteCourse(course.id)" title="Supprimer">
@@ -340,6 +362,18 @@ td { padding: 18px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
 .btn-action.delete { background: #fee2e2; color: #ef4444; }
 .btn-action.delete:hover { background: #fecaca; }
 .icon-small { width: 18px; height: 18px; }
+
+.assign-teacher select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 0.85rem;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+}
+.assign-teacher select:focus { border-color: var(--global-primary-color); }
 
 .loader { text-align: center; padding: 100px 0; color: #64748b; }
 .spinner-large {
